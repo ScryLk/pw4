@@ -1,29 +1,50 @@
 import { Input } from "@/components/ui/input"
 import { Button } from "@/components/ui/button"
 import { Label } from "@/components/ui/label"
+import React from "react"
+import { useState } from "react"
 import { useNavigate } from "react-router-dom"
 import { Card, CardContent, CardHeader } from "@/components/ui/card"
 import logo from "/clear.png"
+import { Moon } from "lucide-react"
 
 export default function Login() {
   const navigate = useNavigate()
+  const [dark, setDark] = useState(false)
+
+  function darkSet() {
+    setDark((prev) => !prev);
+    
+    dark ? document.documentElement.classList.add("dark") : document.documentElement.classList.remove("dark");
+    
+    // if(dark == true) {
+    //   document.documentElement.classList.add("dark");
+    // }
+    // if(dark == false) {
+    //   document.documentElement.classList.remove("dark");
+    // }
+    console.log(dark)
+  }
+
+
+
   return (
     <div className="flex items-center justify-center h-screen overflow-hidden">
-      <Card className="w-96 bg-slate-100">
+      <Card className="w-96 dark:bg-white-100 bg-slate-100">
         <CardHeader className="flex flex-col items-center text-start pb-4 space-y-2">
           <img src={logo} alt="Logo" className="h-24 w-24" />
           <div className="text-center w-screen">
-            <h1 className="text-2xl font-semibold">Login</h1>
+            <h1 className="text-2xl font-semibold text-black">Login</h1>
           </div>
         </CardHeader>
         <CardContent className="space-y-4">
           <div className="space-y-2">
-            <Label>Email</Label>
-            <Input placeholder="seu@email.com" />
+            <Label className="text-black">Email</Label>
+            <Input placeholder="seu@email.com" className="placeholder:text-slate-400" />
           </div>
           <div className="space-y-2">
-            <Label>Senha</Label>
-            <Input type="password" placeholder="******" />
+            <Label className="text-black">Senha</Label>
+            <Input type="password" placeholder="******" className="placeholder:text-slate-400" />
           </div>
           <Button className="w-full bg-blue-500 text-white hover:bg-blue-600 cursor-pointer">
             Entrar
@@ -33,6 +54,9 @@ export default function Login() {
           </Button>
         </CardContent>
       </Card>
+      <div>
+        <Button className="w-32 bg-black text-white cursor-pointer" onClick={() => darkSet()}>{ dark && <Moon className="text-white"/> }</Button>
+      </div>
     </div>
   )
 }
