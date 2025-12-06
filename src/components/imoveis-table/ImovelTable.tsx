@@ -10,14 +10,6 @@ import {
 } from "@/components/ui/table"
 import { Menu, Trash, Edit} from "lucide-react"
 import { Button } from "../ui/button"
-import {
-  Dialog,
-  DialogContent,
-  DialogDescription,
-  DialogHeader,
-  DialogTitle,
-  DialogTrigger,
-} from "@/components/ui/dialog"
 import DialogConfirmExclude from "../dialog/DialogConfirmExclude/DialogConfirmExclude"
 import DialogDetails from "../dialog/DialogDetails/DialogDetails"
 
@@ -28,24 +20,12 @@ interface Imovel {
   status: string
 }
 
-interface ImovelTableProps {
-  imoveis?: Imovel[]
-}
-
-export default function ImovelTable({ imoveis = [] }: ImovelTableProps) {
+export default function ImovelTable() {
   const [dadosImoveis, setDadosImoveis] = useState<Imovel[]>([])
   const [loading, setLoading] = useState<boolean>(true)
   const [error, setError] = useState<string | null>(null)
 
   useEffect(() => {
-    // Se foram passados imóveis via props, usa eles
-    if (imoveis.length > 0) {
-      setDadosImoveis(imoveis)
-      setLoading(false)
-      return
-    }
-
-    // Caso contrário, busca da API
     const fetchImoveis = async () => {
       try {
         setLoading(true)
@@ -58,7 +38,7 @@ export default function ImovelTable({ imoveis = [] }: ImovelTableProps) {
           redirect: "follow"
         }
 
-        const response = await fetch("http://localhost:8080/imovel", requestOptions)
+        const response = await fetch("http://localhost:8080/imoveis", requestOptions)
 
         if (!response.ok) {
           throw new Error(`Erro ao buscar imóveis: ${response.status}`)
@@ -77,7 +57,7 @@ export default function ImovelTable({ imoveis = [] }: ImovelTableProps) {
     }
 
     fetchImoveis()
-  }, [imoveis])
+  }, [])
 
   if (loading) {
     return (
