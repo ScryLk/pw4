@@ -2,114 +2,159 @@ import { Button } from "@/components/ui/button"
 import {
   Dialog,
   DialogContent,
-  DialogDescription,
   DialogHeader,
   DialogTitle,
   DialogTrigger,
+  DialogClose,
 } from "@/components/ui/dialog"
-import { type ReactNode, useEffect } from "react"
+import { type ReactNode } from "react"
 import { Field, FieldLabel, FieldDescription } from "@/components/ui/field"
 
-
-
-interface DialogConfirmExcludeProps {
-  children: ReactNode
+interface Imovel {
+  id: number
+  titulo: string
+  descricao: string
+  preco_venda?: number
+  preco_aluguel?: number
+  finalidade: string
+  status: string
+  dormitorios?: number
+  banheiros?: number
+  garagem?: number
+  area_total?: number
+  area_construida?: number
+  endereco?: string
+  numero?: string
+  complemento?: string
+  cep?: string
+  caracteristicas?: string
+  destaque?: boolean
+  id_tipo_imovel?: number
+  nome_tipo_imovel?: string
+  id_bairro?: number
+  nome_bairro?: string
+  cidade_bairro?: string
+  estado_bairro?: string
 }
 
-export default function DialogDetails({ children }: DialogConfirmExcludeProps) {
+interface DialogDetailsProps {
+  children: ReactNode
+  imovel?: Imovel
+}
+
+export default function DialogDetails({ children, imovel }: DialogDetailsProps) {
+  const formatCurrency = (value?: number) => {
+    if (!value) return "N/A"
+    return new Intl.NumberFormat('pt-BR', {
+      style: 'currency',
+      currency: 'BRL'
+    }).format(value)
+  }
+
   return (
     <Dialog>
       <DialogTrigger asChild>
         {children}
       </DialogTrigger>
-      <DialogContent className="border-gray-500 bg-white">
+      <DialogContent className="border-gray-500 bg-white max-w-4xl max-h-[90vh] overflow-y-auto">
         <DialogHeader>
-          <DialogTitle>Informações do imovel</DialogTitle>
+          <DialogTitle>Informações do Imóvel</DialogTitle>
           <div className="grid grid-cols-3 gap-4 mt-5 mb-5">
             <Field>
-              <FieldLabel>Id</FieldLabel>
-              <FieldDescription>123</FieldDescription>
+              <FieldLabel>ID</FieldLabel>
+              <FieldDescription>{imovel?.id || "N/A"}</FieldDescription>
             </Field>
             <Field>
               <FieldLabel>Título</FieldLabel>
-              <FieldDescription>Casa Moderna</FieldDescription>
-            </Field>
-            <Field>
-              <FieldLabel>Descrição</FieldLabel>
-              <FieldDescription>Casa ampla com 3 quartos</FieldDescription>
-            </Field>
-            <Field>
-              <FieldLabel>Preco Venda</FieldLabel>
-              <FieldDescription>R$123</FieldDescription>
-            </Field>
-            <Field>
-              <FieldLabel>Preco Aluguel</FieldLabel>
-              <FieldDescription>R$123</FieldDescription>
-            </Field>
-            <Field>
-              <FieldLabel>Id</FieldLabel>
-              <FieldDescription>123</FieldDescription>
-            </Field>
-            <Field>
-              <FieldLabel>Finalidade</FieldLabel>
-              <FieldDescription>a</FieldDescription>
+              <FieldDescription>{imovel?.titulo || "N/A"}</FieldDescription>
             </Field>
             <Field>
               <FieldLabel>Status</FieldLabel>
-              <FieldDescription>A venda</FieldDescription>
+              <FieldDescription>{imovel?.status || "N/A"}</FieldDescription>
+            </Field>
+            <Field className="col-span-3">
+              <FieldLabel>Descrição</FieldLabel>
+              <FieldDescription>{imovel?.descricao || "N/A"}</FieldDescription>
             </Field>
             <Field>
-              <FieldLabel>Dormitorios</FieldLabel>
-              <FieldDescription>123</FieldDescription>
+              <FieldLabel>Preço Venda</FieldLabel>
+              <FieldDescription>{formatCurrency(imovel?.preco_venda)}</FieldDescription>
+            </Field>
+            <Field>
+              <FieldLabel>Preço Aluguel</FieldLabel>
+              <FieldDescription>{formatCurrency(imovel?.preco_aluguel)}</FieldDescription>
+            </Field>
+            <Field>
+              <FieldLabel>Finalidade</FieldLabel>
+              <FieldDescription>{imovel?.finalidade || "N/A"}</FieldDescription>
+            </Field>
+            <Field>
+              <FieldLabel>Dormitórios</FieldLabel>
+              <FieldDescription>{imovel?.dormitorios || "N/A"}</FieldDescription>
             </Field>
             <Field>
               <FieldLabel>Banheiros</FieldLabel>
-              <FieldDescription>123</FieldDescription>
+              <FieldDescription>{imovel?.banheiros || "N/A"}</FieldDescription>
             </Field>
             <Field>
               <FieldLabel>Garagem</FieldLabel>
-              <FieldDescription>123</FieldDescription>
+              <FieldDescription>{imovel?.garagem || "N/A"}</FieldDescription>
             </Field>
             <Field>
-              <FieldLabel>Area Total</FieldLabel>
-              <FieldDescription>123</FieldDescription>
+              <FieldLabel>Área Total</FieldLabel>
+              <FieldDescription>{imovel?.area_total ? `${imovel.area_total} m²` : "N/A"}</FieldDescription>
             </Field>
             <Field>
-              <FieldLabel>Area Construida</FieldLabel>
-              <FieldDescription>123</FieldDescription>
+              <FieldLabel>Área Construída</FieldLabel>
+              <FieldDescription>{imovel?.area_construida ? `${imovel.area_construida} m²` : "N/A"}</FieldDescription>
+            </Field>
+            <Field>
+              <FieldLabel>Tipo de Imóvel</FieldLabel>
+              <FieldDescription>{imovel?.nome_tipo_imovel || "N/A"}</FieldDescription>
             </Field>
             <Field>
               <FieldLabel>Endereço</FieldLabel>
-              <FieldDescription>123</FieldDescription>
+              <FieldDescription>{imovel?.endereco || "N/A"}</FieldDescription>
             </Field>
             <Field>
-              <FieldLabel>Numero</FieldLabel>
-              <FieldDescription>123</FieldDescription>
+              <FieldLabel>Número</FieldLabel>
+              <FieldDescription>{imovel?.numero || "N/A"}</FieldDescription>
             </Field>
             <Field>
               <FieldLabel>Complemento</FieldLabel>
-              <FieldDescription>123</FieldDescription>
+              <FieldDescription>{imovel?.complemento || "N/A"}</FieldDescription>
             </Field>
             <Field>
               <FieldLabel>CEP</FieldLabel>
-              <FieldDescription>123</FieldDescription>
+              <FieldDescription>{imovel?.cep || "N/A"}</FieldDescription>
             </Field>
             <Field>
-              <FieldLabel>Caracteristicas</FieldLabel>
-              <FieldDescription>123</FieldDescription>
+              <FieldLabel>Bairro</FieldLabel>
+              <FieldDescription>{imovel?.nome_bairro || "N/A"}</FieldDescription>
+            </Field>
+            <Field>
+              <FieldLabel>Cidade</FieldLabel>
+              <FieldDescription>{imovel?.cidade_bairro || "N/A"}</FieldDescription>
+            </Field>
+            <Field>
+              <FieldLabel>Estado</FieldLabel>
+              <FieldDescription>{imovel?.estado_bairro || "N/A"}</FieldDescription>
+            </Field>
+            <Field className="col-span-2">
+              <FieldLabel>Características</FieldLabel>
+              <FieldDescription>{imovel?.caracteristicas || "N/A"}</FieldDescription>
             </Field>
             <Field>
               <FieldLabel>Destaque</FieldLabel>
-              <FieldDescription>123</FieldDescription>
+              <FieldDescription>{imovel?.destaque ? "Sim" : "Não"}</FieldDescription>
             </Field>
-            <Field>
-              <FieldLabel>Tipo Imovel</FieldLabel>
-              <FieldDescription>123</FieldDescription>
-            </Field>
-
           </div>
-          <div className="flex gap-3 w-4/5">
-            <Button variant={"destructive"} className="bg-white-500 text-black border-2 hover:bg-gray-200 cursor-pointer">Fechar</Button>
+          <div className="flex gap-3 justify-end">
+            <DialogClose asChild>
+              <Button variant="outline" className="border-2 hover:bg-gray-100 cursor-pointer">
+                Fechar
+              </Button>
+            </DialogClose>
           </div>
         </DialogHeader>
       </DialogContent>

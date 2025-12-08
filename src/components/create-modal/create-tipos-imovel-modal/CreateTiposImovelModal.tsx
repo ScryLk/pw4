@@ -9,7 +9,7 @@ import {
 } from "@/components/ui/dialog"
 import { Button } from "@/components/ui/button"
 import { toast } from "sonner"
-import axios from "axios"
+import api from "@/lib/axios"
 
 interface TipoImovel {
   nome: string
@@ -34,7 +34,7 @@ export default function CreateTiposImovelModal({ children, onSubmit }: CreateTip
     setIsLoading(true)
 
     try {
-      await axios.post('http://localhost:8080/tipos-imoveis', formData)
+      await api.post('/tipos-imoveis', formData)
       toast.success('Tipo de imóvel criado com sucesso!')
       onSubmit(formData)
       setOpen(false)

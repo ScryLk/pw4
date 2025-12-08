@@ -31,7 +31,6 @@ export function DashboardCharts() {
                 setLoading(false)
             })
             .catch(error => {
-                console.error("Erro ao buscar dados do gráfico:", error)
                 setLoading(false)
             })
     }, [])

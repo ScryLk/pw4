@@ -8,7 +8,7 @@ import {
   DialogTrigger,
 } from "@/components/ui/dialog"
 import { Button } from "@/components/ui/button"
-import axios from "axios"
+import api from "@/lib/axios"
 
 interface TipoImovel {
   id: number
@@ -34,7 +34,7 @@ export default function ChangeTiposImovelModal({ children, tipoImovel }: ChangeT
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
     try {
-      await axios.put(`http://localhost:8080/tipos-imoveis/${tipoImovel.id}`, formData)
+      await api.put(`/tipos-imoveis/${tipoImovel.id}`, formData)
       setOpen(false)
     } catch (error) {
       alert('Erro ao atualizar tipo de imóvel.')

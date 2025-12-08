@@ -11,6 +11,7 @@ import { Menu, Trash, Edit, ChevronLeft, ChevronRight } from "lucide-react"
 import { Button } from "../ui/button"
 import DialogConfirmExclude from "../dialog/DialogConfirmExclude/DialogConfirmExclude"
 import DialogDetailsCliente from "../dialog/DialogDetailsCliente/DialogDetailsCliente"
+import DialogEditCliente from "../dialog/DialogEditCliente/DialogEditCliente"
 import { useEffect, useState } from "react"
 import { toast } from "sonner"
 
@@ -133,9 +134,14 @@ export default function ClienteTable() {
                         <Trash size={16} />
                       </Button>
                     </DialogConfirmExclude>
-                    <Button size="icon" variant="default" className="w-7 h-7 bg-yellow-500 hover:bg-yellow-600 rounded-lg cursor-pointer">
-                      <Edit size={16} />
-                    </Button>
+                    <DialogEditCliente
+                      cliente={cliente}
+                      onSuccess={fetchClientes}
+                    >
+                      <Button size="icon" variant="default" className="w-7 h-7 bg-yellow-500 hover:bg-yellow-600 rounded-lg cursor-pointer">
+                        <Edit size={16} />
+                      </Button>
+                    </DialogEditCliente>
                   </div>
                 </TableCell>
               </TableRow>

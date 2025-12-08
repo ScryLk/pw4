@@ -8,7 +8,7 @@ import {
   DialogTrigger,
 } from "@/components/ui/dialog"
 import { Button } from "@/components/ui/button"
-import axios from "axios"
+import api from "@/lib/axios"
 
 interface Imovel {
   id: number
@@ -122,7 +122,7 @@ export default function ChangeImoveisModal({ children, imovel }: ChangeImoveisMo
     e.preventDefault()
     setIsLoading(true)
     try {
-      await axios.put(`http://localhost:8080/imoveis/${imovel.id}`, formData)
+      await api.put(`/imoveis/${imovel.id}`, formData)
       setOpen(false)
     } catch (error) {
       console.error('Erro ao atualizar imóvel:', error)

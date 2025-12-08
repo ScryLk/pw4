@@ -9,7 +9,7 @@ import {
 } from "@/components/ui/dialog"
 import { Button } from "@/components/ui/button"
 import { toast } from "sonner"
-import axios from "axios"
+import api from "@/lib/axios"
 
 interface Bairros {
   nome: string
@@ -40,7 +40,7 @@ export default function CreateModal({ children, onSubmit }: CreateModalProps) {
     setIsLoading(true)
 
     try {
-      await axios.post('http://localhost:8080/bairros', formData)
+      await api.post('/bairros', formData)
       toast.success('Bairro criado com sucesso!')
       onSubmit(formData)
       setOpen(false)

@@ -78,14 +78,6 @@ export default function Login() {
             <Button type="submit" className="w-full bg-blue-500 hover:bg-blue-600">
               Entrar
             </Button>
-            <Button
-              type="button"
-              variant="outline"
-              className="w-full"
-              onClick={() => navigate('/registro')}
-            >
-              Cadastrar
-            </Button>
           </form>
         </CardContent>
       </Card>

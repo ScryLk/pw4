@@ -97,10 +97,25 @@ export default function CreateImoveisModal({ children, onSubmit }: CreateImoveis
       return
     }
 
-    console.log('Enviando dados:', formData)
+    // Preparar dados para envio - remover campos vazios e converter para null
+    const userId = localStorage.getItem('userId')
+    const dataToSend: any = {
+      titulo: formData.titulo,
+      descricao: formData.descricao,
+      finalidade: formData.finalidade,
+      status: formData.status,
+      tipoImovelId: formData.tipoImovelId,
+      bairroId: formData.bairroId,
+      usuarioId: userId ? Number(userId) : undefined,
+      endereco: formData.endereco || null,
+      numero: formData.numero || null,
+      cep: formData.cep || null,
+    }
+
+    console.log('Enviando dados:', dataToSend)
 
     try {
-      const response = await api.post('/imoveis', formData)
+      const response = await api.post('/imoveis', dataToSend)
       console.log('Resposta:', response.data)
       onSubmit(formData)
       setOpen(false)
@@ -119,11 +134,27 @@ export default function CreateImoveisModal({ children, onSubmit }: CreateImoveis
     } catch (error: any) {
       console.error('Erro ao criar imóvel:', error)
       console.error('Detalhes do erro:', error.response?.data)
+      console.error('Status:', error.response?.status)
+      console.error('Headers:', error.response?.headers)
 
       if (error.response?.status === 403) {
         toast.error('Você não tem permissão para criar imóveis')
       } else if (error.response?.status === 401) {
         toast.error('Sessão expirada. Faça login novamente')
+      } else if (error.response?.status === 500) {
+        const errorMsg = error.response?.data?.message || error.response?.data?.error || 'Erro interno do servidor'
+
+        // Verificar se é erro de usuário não encontrado
+        if (errorMsg.includes('Usuário') && errorMsg.includes('não encontrado')) {
+          toast.error('Sessão inválida. Por favor, faça login novamente.')
+          setTimeout(() => {
+            localStorage.clear()
+            window.location.href = '/login'
+          }, 2000)
+        } else {
+          toast.error(`Erro no servidor: ${errorMsg}`)
+        }
+        console.error('Erro 500 completo:', JSON.stringify(error.response?.data, null, 2))
       } else if (error.response?.data?.message) {
         toast.error(error.response.data.message)
       } else {

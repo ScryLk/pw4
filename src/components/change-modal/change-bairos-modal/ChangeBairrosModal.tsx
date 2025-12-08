@@ -8,7 +8,7 @@ import {
   DialogTrigger,
 } from "@/components/ui/dialog"
 import { Button } from "@/components/ui/button"
-import axios from "axios"
+import api from "@/lib/axios"
 
 interface Bairros {
   id: number
@@ -37,7 +37,7 @@ export default function ChangeBairrosModal({ children, bairro }: ChangeBairrosMo
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
     try {
-      await axios.put(`http://localhost:8080/bairros/${bairro.id}`, formData)
+      await api.put(`/bairros/${bairro.id}`, formData)
       setOpen(false)
     } catch (error) {
       alert('Erro ao atualizar bairro.')
