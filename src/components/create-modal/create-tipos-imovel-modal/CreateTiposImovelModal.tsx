@@ -8,6 +8,7 @@ import {
   DialogTrigger,
 } from "@/components/ui/dialog"
 import { Button } from "@/components/ui/button"
+import { toast } from "sonner"
 import axios from "axios"
 
 interface TipoImovel {
@@ -34,6 +35,7 @@ export default function CreateTiposImovelModal({ children, onSubmit }: CreateTip
 
     try {
       await axios.post('http://localhost:8080/tipos-imoveis', formData)
+      toast.success('Tipo de imóvel criado com sucesso!')
       onSubmit(formData)
       setOpen(false)
       setFormData({
@@ -42,7 +44,7 @@ export default function CreateTiposImovelModal({ children, onSubmit }: CreateTip
       })
     } catch (error) {
       console.error('Erro ao criar tipo de imóvel:', error)
-      alert('Erro ao criar tipo de imóvel. Tente novamente.')
+      toast.error('Erro ao criar tipo de imóvel. Tente novamente.')
     } finally {
       setIsLoading(false)
     }

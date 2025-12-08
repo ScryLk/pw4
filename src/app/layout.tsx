@@ -33,7 +33,7 @@ export default function Layout({ children }: { children: React.ReactNode }) {
     <SidebarProvider defaultOpen={true}>
       <AppSidebar />
       <SidebarInset>
-        <div className="pl-20">
+        <div className="pl-50">
           <Header name={currentName} onToggleDark={toggleDarkMode} dark={dark} />
           <main className="flex-1 p-6">
             {children}

@@ -66,7 +66,6 @@ export default function BairrosTable() {
       setError(null)
     } catch (error) {
       console.error("Erro ao buscar bairros", error)
-      setError(error instanceof Error ? error.message : "Erro desconhecido")
       toast.error("Erro ao carregar os dados dos bairros")
     } finally {
       setLoading(false)

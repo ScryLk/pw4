@@ -8,6 +8,7 @@ import {
   DialogTrigger,
 } from "@/components/ui/dialog"
 import { Button } from "@/components/ui/button"
+import { toast } from "sonner"
 import axios from "axios"
 
 interface Bairros {
@@ -40,6 +41,7 @@ export default function CreateModal({ children, onSubmit }: CreateModalProps) {
 
     try {
       await axios.post('http://localhost:8080/bairros', formData)
+      toast.success('Bairro criado com sucesso!')
       onSubmit(formData)
       setOpen(false)
       setFormData({
@@ -51,7 +53,7 @@ export default function CreateModal({ children, onSubmit }: CreateModalProps) {
       })
     } catch (error) {
       console.error('Erro ao criar bairro:', error)
-      alert('Erro ao criar bairro. Tente novamente.')
+      toast.error('Erro ao criar bairro. Tente novamente.')
     } finally {
       setIsLoading(false)
     }

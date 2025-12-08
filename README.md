@@ -76,17 +76,3 @@ src/
 ├── lib/            # Utilitários e helpers
 └── assets/         # Imagens e arquivos estáticos
 ```
-
-## Contribuindo
-
-Contribuições são bem-vindas! Sinta-se à vontade para abrir issues e pull requests.
-
-## Licença
-
-Este projeto está sob a licença MIT.
-
----
-
-<div align="center">
-  Desenvolvido com dedicação para facilitar a gestão imobiliária
-</div>

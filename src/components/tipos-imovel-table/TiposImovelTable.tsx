@@ -62,7 +62,6 @@ export default function TiposImovelTable() {
       setError(null)
     } catch (error) {
       console.error("Erro ao buscar tipos de imóvel", error)
-      setError(error instanceof Error ? error.message : "Erro desconhecido")
       toast.error("Erro ao carregar os dados dos tipos de imóvel")
     } finally {
       setLoading(false)

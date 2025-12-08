@@ -1,5 +1,6 @@
 import './App.css'
 import { BrowserRouter, Routes, Route } from 'react-router-dom'
+import { Toaster } from 'sonner'
 import Login from './pages/auth/Login'
 import Registro from './pages/auth/Registro'
 import Dashboard from './pages/dashboard/Dashboard'
@@ -12,6 +13,7 @@ import TiposImovel from './pages/tipos-imovel/TiposImovel'
 function App() {
   return (
     <BrowserRouter>
+      <Toaster position="top-right" richColors closeButton />
       <Routes>
         <Route path='/tipos-imovel' element={<TiposImovel />} />
         <Route path='/bairros' element={<Bairros />} />

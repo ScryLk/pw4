@@ -87,7 +87,6 @@ export default function ImovelTable() {
       setError(null)
     } catch (error) {
       console.error("Erro ao buscar imóveis:", error)
-      setError(error instanceof Error ? error.message : "Erro desconhecido")
       setDadosImoveis([])
       toast.error("Erro ao carregar os dados dos imóveis")
     } finally {

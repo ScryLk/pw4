@@ -22,20 +22,12 @@ interface Cliente {
   tipo: string
 }
 
-interface PaginatedResponse {
-  content: Cliente[]
-  totalPages: number
-  totalElements: number
-  size: number
-  number: number
-}
-
 export default function ClienteTable() {
-  const [dadosClientes, setDadosClientes] = useState<Cliente[]>([])
+  const [todosClientes, setTodosClientes] = useState<Cliente[]>([])
   const [loading, setLoading] = useState<boolean>(true)
   const [error, setError] = useState<string | null>(null)
   const [page, setPage] = useState<number>(0)
-  const [totalPages, setTotalPages] = useState<number>(0)
+  const itemsPerPage = 10
 
   const fetchClientes = async () => {
     try {
@@ -51,21 +43,23 @@ export default function ClienteTable() {
         credentials: "include"
       }
 
-      const response = await fetch(`http://localhost:8080/users/users-page?page=${page}&size=10&sort=id`, requestOptions)
+      const response = await fetch(`http://localhost:8080/users`, requestOptions)
 
       if (!response.ok) {
+        if (response.status === 401) {
+          throw new Error('Você precisa estar autenticado para acessar esta página')
+        }
         throw new Error(`Erro ao buscar clientes: ${response.status}`)
       }
 
-      const result: PaginatedResponse = await response.json()
-      setDadosClientes(result.content)
-      setTotalPages(result.totalPages)
+      const result: Cliente[] = await response.json()
+      setTodosClientes(result)
       setError(null)
     } catch (error) {
       console.error('Erro ao buscar clientes:', error)
       setError(error instanceof Error ? error.message : 'Erro desconhecido')
-      setDadosClientes([])
-      toast.error("Erro ao carregar os dados dos clientes")
+      setTodosClientes([])
+      toast.error(error instanceof Error ? error.message : "Erro ao carregar os dados dos clientes")
     } finally {
       setLoading(false)
     }
@@ -73,7 +67,7 @@ export default function ClienteTable() {
 
   useEffect(() => {
     fetchClientes()
-  }, [page])
+  }, [])
 
   if (loading) {
     return (
@@ -90,6 +84,11 @@ export default function ClienteTable() {
       </div>
     )
   }
+
+  const totalPages = Math.ceil(todosClientes.length / itemsPerPage)
+  const startIndex = page * itemsPerPage
+  const endIndex = startIndex + itemsPerPage
+  const dadosClientes = todosClientes.slice(startIndex, endIndex)
 
   return (
     <div>
@@ -112,7 +111,7 @@ export default function ClienteTable() {
               </TableCell>
             </TableRow>
           ) : (
-            dadosClientes.map((cliente) => (
+            dadosClientes.map((cliente: Cliente) => (
               <TableRow key={cliente.id}>
                 <TableCell className="text-center">{cliente.id}</TableCell>
                 <TableCell className="text-center">{cliente.nome}</TableCell>
@@ -146,7 +145,7 @@ export default function ClienteTable() {
       </Table>
       <div className="flex items-center justify-between mt-4">
         <p className="text-sm text-gray-600">
-          Página {page + 1} de {totalPages}
+          Página {page + 1} de {totalPages || 1}
         </p>
         <div className="flex gap-2">
           <Button
@@ -162,7 +161,7 @@ export default function ClienteTable() {
             variant="outline"
             size="sm"
             onClick={() => setPage(page + 1)}
-            disabled={page === totalPages - 1}
+            disabled={page >= totalPages - 1 || totalPages === 0}
           >
             Próxima
             <ChevronRight className="h-4 w-4" />

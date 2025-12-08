@@ -34,7 +34,7 @@ export function AppSidebar() {
     <Sidebar>
       <SidebarHeader>
         <div className="flex items-center justify-center p-4">
-          <img src="/clear.png" alt="Logo" className="h-32 w-auto" />
+          <img src="/clear.png" alt="Logo" className="h-20 md:h-32 w-auto" />
         </div>
       </SidebarHeader>
       <SidebarContent className="px-3">
