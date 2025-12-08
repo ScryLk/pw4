@@ -16,10 +16,20 @@ import {
 import { Users, ChevronUp, Home, ChartColumnIncreasing, Users2, Map, Tag } from "lucide-react"
 import { useNavigate } from "react-router-dom"
 import { useCurrentRouteName } from "@/hooks/useCurrentRouteName"
+import { useState, useEffect } from "react"
 
 export function AppSidebar() {
   const currentName = useCurrentRouteName()
   const navigate = useNavigate()
+  const [userName, setUserName] = useState("Username")
+
+  useEffect(() => {
+    const name = localStorage.getItem('userName')
+    if (name) {
+      setUserName(name)
+    }
+  }, [])
+
   return (
     <Sidebar>
       <SidebarHeader>
@@ -92,7 +102,7 @@ export function AppSidebar() {
               <DropdownMenuTrigger asChild>
                 <SidebarMenuButton className="py-6">
                   <Users2 className="h-5 w-5" />
-                  <span className="font-medium">Username</span>
+                  <span className="font-medium">{userName}</span>
                   <ChevronUp className="ml-auto h-4 w-4" />
                 </SidebarMenuButton>
               </DropdownMenuTrigger>
@@ -102,7 +112,7 @@ export function AppSidebar() {
               >
                 <DropdownMenuItem>
                   <div>
-                  <button className="w-32 text-start" onClick={() => navigate('/login')}>Sair</button>
+                    <button className="w-32 text-start" onClick={() => navigate('/login')}>Sair</button>
                   </div>
                 </DropdownMenuItem>
               </DropdownMenuContent>

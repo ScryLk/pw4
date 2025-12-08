@@ -76,19 +76,19 @@ export default function CreateImoveisModal({ children, onSubmit }: CreateImoveis
   return (
     <Dialog open={open} onOpenChange={setOpen}>
       <DialogTrigger asChild>{children}</DialogTrigger>
-      <DialogContent className="bg-white">
+      <DialogContent className="bg-white dark:bg-gray-800">
         <DialogHeader>
-          <DialogTitle>Criar Imóvel</DialogTitle>
+          <DialogTitle className="dark:text-white">Criar Imóvel</DialogTitle>
         </DialogHeader>
 
-        <form className="bg-white" onSubmit={handleSubmit}>
-          <div className="grid gap-4 bg-white py-4">
-            <div className="grid bg-white gap-2">
-              <label className="text-sm font-medium">Título *</label>
+        <form onSubmit={handleSubmit}>
+          <div className="grid gap-4 py-4">
+            <div className="grid gap-2">
+              <label className="text-sm font-medium dark:text-white">Título *</label>
               <input
                 type="text"
                 placeholder="Digite o título"
-                className="w-full px-3 py-2 border rounded-md"
+                className="w-full px-3 py-2 border rounded-md dark:bg-gray-700 dark:border-gray-600 dark:text-white dark:placeholder-gray-400"
                 value={formData.titulo}
                 onChange={(e) => setFormData({ ...formData, titulo: e.target.value })}
                 required
@@ -96,10 +96,10 @@ export default function CreateImoveisModal({ children, onSubmit }: CreateImoveis
             </div>
 
             <div className="grid gap-2">
-              <label className="text-sm font-medium">Descrição *</label>
+              <label className="text-sm font-medium dark:text-white">Descrição *</label>
               <textarea
                 placeholder="Digite a descrição"
-                className="w-full px-3 py-2 border rounded-md"
+                className="w-full px-3 py-2 border rounded-md dark:bg-gray-700 dark:border-gray-600 dark:text-white dark:placeholder-gray-400"
                 value={formData.descricao}
                 onChange={(e) => setFormData({ ...formData, descricao: e.target.value })}
                 rows={3}
@@ -109,9 +109,9 @@ export default function CreateImoveisModal({ children, onSubmit }: CreateImoveis
 
             <div className="grid grid-cols-2 gap-4">
               <div className="grid gap-2">
-                <label className="text-sm font-medium">Finalidade *</label>
+                <label className="text-sm font-medium dark:text-white">Finalidade *</label>
                 <select
-                  className="w-full px-3 py-2 border rounded-md"
+                  className="w-full px-3 py-2 border rounded-md dark:bg-gray-700 dark:border-gray-600 dark:text-white"
                   value={formData.finalidade}
                   onChange={(e) => setFormData({ ...formData, finalidade: e.target.value })}
                   required
@@ -123,9 +123,9 @@ export default function CreateImoveisModal({ children, onSubmit }: CreateImoveis
               </div>
 
               <div className="grid gap-2">
-                <label className="text-sm font-medium">Status *</label>
+                <label className="text-sm font-medium dark:text-white">Status *</label>
                 <select
-                  className="w-full px-3 py-2 border rounded-md"
+                  className="w-full px-3 py-2 border rounded-md dark:bg-gray-700 dark:border-gray-600 dark:text-white"
                   value={formData.status}
                   onChange={(e) => setFormData({ ...formData, status: e.target.value })}
                   required
@@ -140,11 +140,11 @@ export default function CreateImoveisModal({ children, onSubmit }: CreateImoveis
 
             <div className="grid grid-cols-2 gap-4">
               <div className="grid gap-2">
-                <label className="text-sm font-medium">Tipo de Imóvel *</label>
+                <label className="text-sm font-medium dark:text-white">Tipo de Imóvel *</label>
                 <input
                   type="number"
                   placeholder="ID do tipo"
-                  className="w-full px-3 py-2 border rounded-md"
+                  className="w-full px-3 py-2 border rounded-md dark:bg-gray-700 dark:border-gray-600 dark:text-white dark:placeholder-gray-400"
                   value={formData.tipoImovelId || ''}
                   onChange={(e) => setFormData({ ...formData, tipoImovelId: Number(e.target.value) })}
                   required
@@ -152,11 +152,11 @@ export default function CreateImoveisModal({ children, onSubmit }: CreateImoveis
               </div>
 
               <div className="grid gap-2">
-                <label className="text-sm font-medium">Bairro *</label>
+                <label className="text-sm font-medium dark:text-white">Bairro *</label>
                 <input
                   type="number"
                   placeholder="ID do bairro"
-                  className="w-full px-3 py-2 border rounded-md"
+                  className="w-full px-3 py-2 border rounded-md dark:bg-gray-700 dark:border-gray-600 dark:text-white dark:placeholder-gray-400"
                   value={formData.bairroId || ''}
                   onChange={(e) => setFormData({ ...formData, bairroId: Number(e.target.value) })}
                   required

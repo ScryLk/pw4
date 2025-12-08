@@ -7,13 +7,14 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table"
-import { Menu, Trash, Edit } from "lucide-react"
+import { Menu, Trash, Edit, ChevronLeft, ChevronRight } from "lucide-react"
 import { Button } from "../ui/button"
 import DialogConfirmExclude from "../dialog/DialogConfirmExclude/DialogConfirmExclude"
 import DialogDetailsCliente from "../dialog/DialogDetailsCliente/DialogDetailsCliente"
 import { useEffect, useState } from "react"
 import CreateModal from "../create-modal/create-bairros-modal/CreateModal"
 import ChangeBairrosModal from "../change-modal/change-bairos-modal/ChangeBairrosModal"
+import { toast } from "sonner"
 
 interface Bairros {
   id: number
@@ -24,37 +25,49 @@ interface Bairros {
   cep_final: string
 }
 
-
+interface PaginatedResponse {
+  content: Bairros[]
+  totalPages: number
+  totalElements: number
+  size: number
+  number: number
+}
 
 export default function BairrosTable() {
   const [dadosBairros, setDadosBairros] = useState<Bairros[]>([])
   const [loading, setLoading] = useState<boolean>(true)
   const [error, setError] = useState<string | null>(null)
+  const [page, setPage] = useState<number>(0)
+  const [totalPages, setTotalPages] = useState<number>(0)
 
   const fetchBairros = async () => {
     try {
       setLoading(true)
       const myHeaders = new Headers()
       myHeaders.append("Content-Type", "application/json")
+      myHeaders.append("Accept", "application/json")
 
       const requestOptions: RequestInit = {
         method: "GET",
         headers: myHeaders,
-        redirect: "follow"
+        redirect: "follow",
+        credentials: "include"
       }
 
-      const response = await fetch("http://localhost:8080/bairros", requestOptions)
+      const response = await fetch(`http://localhost:8080/bairros/bairros-page?page=${page}&size=10&sort=id`, requestOptions)
 
       if (!response.ok) {
         throw new Error(`Erro ao buscar bairros: ${response.status}`)
       }
 
-      const result: Bairros[] = await response.json()
-      setDadosBairros(result)
+      const result: PaginatedResponse = await response.json()
+      setDadosBairros(result.content)
+      setTotalPages(result.totalPages)
       setError(null)
     } catch (error) {
-      console.error("Erro ao buscar imóveis", error)
+      console.error("Erro ao buscar bairros", error)
       setError(error instanceof Error ? error.message : "Erro desconhecido")
+      toast.error("Erro ao carregar os dados dos bairros")
     } finally {
       setLoading(false)
     }
@@ -62,7 +75,7 @@ export default function BairrosTable() {
 
   useEffect(() => {
     fetchBairros()
-  }, [])
+  }, [page])
   if (loading) {
     return (
       <div className="flex justify-center items-center p-8">
@@ -152,6 +165,31 @@ export default function BairrosTable() {
           )}
         </TableBody>
       </Table>
+      <div className="flex items-center justify-between mt-4">
+        <p className="text-sm text-gray-600">
+          Página {page + 1} de {totalPages}
+        </p>
+        <div className="flex gap-2">
+          <Button
+            variant="outline"
+            size="sm"
+            onClick={() => setPage(page - 1)}
+            disabled={page === 0}
+          >
+            <ChevronLeft className="h-4 w-4" />
+            Anterior
+          </Button>
+          <Button
+            variant="outline"
+            size="sm"
+            onClick={() => setPage(page + 1)}
+            disabled={page === totalPages - 1}
+          >
+            Próxima
+            <ChevronRight className="h-4 w-4" />
+          </Button>
+        </div>
+      </div>
     </div>
 
   )

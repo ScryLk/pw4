@@ -8,12 +8,13 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table"
-import { Menu, Trash, Edit} from "lucide-react"
+import { Menu, Trash, Edit, ChevronLeft, ChevronRight} from "lucide-react"
 import { Button } from "../ui/button"
 import DialogConfirmExclude from "../dialog/DialogConfirmExclude/DialogConfirmExclude"
 import DialogDetails from "../dialog/DialogDetails/DialogDetails"
 import CreateImoveisModal from "../create-modal/create-imoveis-modal/CreateImoveisModal"
 import ChangeImoveisModal from "../change-modal/change-imoveis-modal/ChangeImoveisModal"
+import { toast } from "sonner"
 
 interface Imovel {
   id: number
@@ -45,38 +46,50 @@ interface Imovel {
   email_usuario?: string
 }
 
-
+interface PaginatedResponse {
+  content: Imovel[]
+  totalPages: number
+  totalElements: number
+  size: number
+  number: number
+}
 
 export default function ImovelTable() {
   const [dadosImoveis, setDadosImoveis] = useState<Imovel[]>([])
   const [loading, setLoading] = useState<boolean>(true)
   const [error, setError] = useState<string | null>(null)
+  const [page, setPage] = useState<number>(0)
+  const [totalPages, setTotalPages] = useState<number>(0)
 
   const fetchImoveis = async () => {
     try {
       setLoading(true)
       const myHeaders = new Headers()
       myHeaders.append("Content-Type", "application/json")
+      myHeaders.append("Accept", "application/json")
 
       const requestOptions: RequestInit = {
         method: "GET",
         headers: myHeaders,
-        redirect: "follow"
+        redirect: "follow",
+        credentials: "include"
       }
 
-      const response = await fetch("http://localhost:8080/imoveis", requestOptions)
+      const response = await fetch(`http://localhost:8080/imoveis/imoveis-page?page=${page}&size=10&sort=id`, requestOptions)
 
       if (!response.ok) {
         throw new Error(`Erro ao buscar imóveis: ${response.status}`)
       }
 
-      const result: Imovel[] = await response.json()
-      setDadosImoveis(result)
+      const result: PaginatedResponse = await response.json()
+      setDadosImoveis(result.content)
+      setTotalPages(result.totalPages)
       setError(null)
     } catch (error) {
       console.error("Erro ao buscar imóveis:", error)
       setError(error instanceof Error ? error.message : "Erro desconhecido")
       setDadosImoveis([])
+      toast.error("Erro ao carregar os dados dos imóveis")
     } finally {
       setLoading(false)
     }
@@ -84,7 +97,7 @@ export default function ImovelTable() {
 
   useEffect(() => {
     fetchImoveis()
-  }, [])
+  }, [page])
 
   if (loading) {
     return (
@@ -166,6 +179,31 @@ export default function ImovelTable() {
           )}
         </TableBody>
       </Table>
+      <div className="flex items-center justify-between mt-4">
+        <p className="text-sm text-gray-600">
+          Página {page + 1} de {totalPages}
+        </p>
+        <div className="flex gap-2">
+          <Button
+            variant="outline"
+            size="sm"
+            onClick={() => setPage(page - 1)}
+            disabled={page === 0}
+          >
+            <ChevronLeft className="h-4 w-4" />
+            Anterior
+          </Button>
+          <Button
+            variant="outline"
+            size="sm"
+            onClick={() => setPage(page + 1)}
+            disabled={page === totalPages - 1}
+          >
+            Próxima
+            <ChevronRight className="h-4 w-4" />
+          </Button>
+        </div>
+      </div>
     </div>
   )
 

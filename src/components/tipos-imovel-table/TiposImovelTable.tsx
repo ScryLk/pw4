@@ -7,12 +7,13 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table"
-import { Trash, Edit } from "lucide-react"
+import { Trash, Edit, ChevronLeft, ChevronRight } from "lucide-react"
 import { Button } from "../ui/button"
 import DialogConfirmExclude from "../dialog/DialogConfirmExclude/DialogConfirmExclude"
 import { useEffect, useState } from "react"
 import CreateTiposImovelModal from "../create-modal/create-tipos-imovel-modal/CreateTiposImovelModal"
 import ChangeTiposImovelModal from "../change-modal/change-tipos-imovel-modal/ChangeTiposImovelModal"
+import { toast } from "sonner"
 
 interface TipoImovel {
   id: number
@@ -20,36 +21,49 @@ interface TipoImovel {
   descricao: string
 }
 
+interface PaginatedResponse {
+  content: TipoImovel[]
+  totalPages: number
+  totalElements: number
+  size: number
+  number: number
+}
+
 export default function TiposImovelTable() {
   const [dadosTipos, setDadosTipos] = useState<TipoImovel[]>([])
   const [loading, setLoading] = useState<boolean>(true)
   const [error, setError] = useState<string | null>(null)
+  const [page, setPage] = useState<number>(0)
+  const [totalPages, setTotalPages] = useState<number>(0)
 
   const fetchTiposImovel = async () => {
     try {
       setLoading(true)
       const myHeaders = new Headers()
       myHeaders.append("Content-Type", "application/json")
+      myHeaders.append("Accept", "application/json")
 
       const requestOptions: RequestInit = {
         method: "GET",
         headers: myHeaders,
-        redirect: "follow"
+        redirect: "follow",
+        credentials: "include"
       }
 
-      const response = await fetch("http://localhost:8080/tipos-imoveis/tipos-page", requestOptions)
+      const response = await fetch(`http://localhost:8080/tipos-imoveis/tipos-page?page=${page}&size=10&sort=id`, requestOptions)
 
       if (!response.ok) {
         throw new Error(`Erro ao buscar tipos de imóvel: ${response.status}`)
       }
 
-      const result = await response.json()
-      const dados = Array.isArray(result) ? result : result.content || []
-      setDadosTipos(dados)
+      const result: PaginatedResponse = await response.json()
+      setDadosTipos(result.content)
+      setTotalPages(result.totalPages)
       setError(null)
     } catch (error) {
       console.error("Erro ao buscar tipos de imóvel", error)
       setError(error instanceof Error ? error.message : "Erro desconhecido")
+      toast.error("Erro ao carregar os dados dos tipos de imóvel")
     } finally {
       setLoading(false)
     }
@@ -57,20 +71,12 @@ export default function TiposImovelTable() {
 
   useEffect(() => {
     fetchTiposImovel()
-  }, [])
+  }, [page])
 
   if (loading) {
     return (
       <div className="flex justify-center items-center p-8">
         <p className="text-gray-500">Carregando tipos de imóvel...</p>
-      </div>
-    )
-  }
-
-  if (error) {
-    return (
-      <div className="flex justify-center items-center p-8">
-        <p className="text-red-500">Erro: {error}</p>
       </div>
     )
   }
@@ -110,7 +116,7 @@ export default function TiposImovelTable() {
                 <TableCell className="text-center">{tipo.nome}</TableCell>
                 <TableCell className="text-center">{tipo.descricao}</TableCell>
                 <TableCell>
-                  <div className="flex gap-2 justify-center">
+                  <div className="gap-4 flex justify-center">
                     <DialogConfirmExclude
                       id={tipo.id}
                       endpoint="tipos-imoveis"
@@ -132,6 +138,31 @@ export default function TiposImovelTable() {
           )}
         </TableBody>
       </Table>
+      <div className="flex items-center justify-between mt-4">
+        <p className="text-sm text-gray-600">
+          Página {page + 1} de {totalPages}
+        </p>
+        <div className="flex gap-2">
+          <Button
+            variant="outline"
+            size="sm"
+            onClick={() => setPage(page - 1)}
+            disabled={page === 0}
+          >
+            <ChevronLeft className="h-4 w-4" />
+            Anterior
+          </Button>
+          <Button
+            variant="outline"
+            size="sm"
+            onClick={() => setPage(page + 1)}
+            disabled={page === totalPages - 1}
+          >
+            Próxima
+            <ChevronRight className="h-4 w-4" />
+          </Button>
+        </div>
+      </div>
     </div>
   )
 }
