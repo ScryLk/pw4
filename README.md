@@ -1,73 +1,92 @@
-# React + TypeScript + Vite
+<div align="center">
+  <img src="./public/clear.png" alt="Lumina Logo" width="200"/>
 
-This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
+  # Lumina Imobiliária
 
-Currently, two official plugins are available:
+  Sistema de gerenciamento imobiliário moderno e intuitivo
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react) uses [Babel](https://babeljs.io/) (or [oxc](https://oxc.rs) when used in [rolldown-vite](https://vite.dev/guide/rolldown)) for Fast Refresh
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react-swc) uses [SWC](https://swc.rs/) for Fast Refresh
+  [![React](https://img.shields.io/badge/React-19.2.0-61dafb?style=flat&logo=react)](https://reactjs.org/)
+  [![TypeScript](https://img.shields.io/badge/TypeScript-5.9.3-blue?style=flat&logo=typescript)](https://www.typescriptlang.org/)
+  [![Vite](https://img.shields.io/badge/Vite-7.2.2-646cff?style=flat&logo=vite)](https://vitejs.dev/)
+  [![TailwindCSS](https://img.shields.io/badge/TailwindCSS-4.1.17-38bdf8?style=flat&logo=tailwindcss)](https://tailwindcss.com/)
+</div>
 
-## React Compiler
+## Sobre o Projeto
 
-The React Compiler is not enabled on this template because of its impact on dev & build performances. To add it, see [this documentation](https://react.dev/learn/react-compiler/installation).
+Lumina é uma plataforma completa de gerenciamento imobiliário que permite controlar imóveis, clientes, bairros e tipos de propriedades de forma eficiente e moderna.
 
-## Expanding the ESLint configuration
+## Funcionalidades
 
-If you are developing a production application, we recommend updating the configuration to enable type-aware lint rules:
+- Gerenciamento completo de imóveis
+- Cadastro e controle de clientes
+- Organização por bairros
+- Categorização por tipos de imóveis
+- Dashboard com estatísticas e gráficos
+- Interface responsiva e intuitiva
+- Sistema de autenticação seguro
 
-```js
-export default defineConfig([
-  globalIgnores(['dist']),
-  {
-    files: ['**/*.{ts,tsx}'],
-    extends: [
-      // Other configs...
+## Tecnologias
 
-      // Remove tseslint.configs.recommended and replace with this
-      tseslint.configs.recommendedTypeChecked,
-      // Alternatively, use this for stricter rules
-      tseslint.configs.strictTypeChecked,
-      // Optionally, add this for stylistic rules
-      tseslint.configs.stylisticTypeChecked,
+- **React** - Biblioteca para construção de interfaces
+- **TypeScript** - Tipagem estática para JavaScript
+- **Vite** - Build tool rápido e moderno
+- **TailwindCSS** - Framework CSS utilitário
+- **Shadcn/ui** - Componentes de UI acessíveis
+- **React Hook Form** - Gerenciamento de formulários
+- **Zod** - Validação de schemas
+- **Axios** - Cliente HTTP
+- **Recharts** - Gráficos e visualizações
+- **React Router** - Navegação entre páginas
 
-      // Other configs...
-    ],
-    languageOptions: {
-      parserOptions: {
-        project: ['./tsconfig.node.json', './tsconfig.app.json'],
-        tsconfigRootDir: import.meta.dirname,
-      },
-      // other options...
-    },
-  },
-])
+## Instalação
+
+```bash
+# Clone o repositório
+git clone https://github.com/ScryLk/pw4.git
+
+# Entre no diretório
+cd pw4
+
+# Instale as dependências
+npm install
+
+# Configure as variáveis de ambiente
+cp .env.example .env
+
+# Inicie o servidor de desenvolvimento
+npm run dev
 ```
 
-You can also install [eslint-plugin-react-x](https://github.com/Rel1cx/eslint-react/tree/main/packages/plugins/eslint-plugin-react-x) and [eslint-plugin-react-dom](https://github.com/Rel1cx/eslint-react/tree/main/packages/plugins/eslint-plugin-react-dom) for React-specific lint rules:
+## Scripts Disponíveis
 
-```js
-// eslint.config.js
-import reactX from 'eslint-plugin-react-x'
-import reactDom from 'eslint-plugin-react-dom'
-
-export default defineConfig([
-  globalIgnores(['dist']),
-  {
-    files: ['**/*.{ts,tsx}'],
-    extends: [
-      // Other configs...
-      // Enable lint rules for React
-      reactX.configs['recommended-typescript'],
-      // Enable lint rules for React DOM
-      reactDom.configs.recommended,
-    ],
-    languageOptions: {
-      parserOptions: {
-        project: ['./tsconfig.node.json', './tsconfig.app.json'],
-        tsconfigRootDir: import.meta.dirname,
-      },
-      // other options...
-    },
-  },
-])
+```bash
+npm run dev      # Inicia o servidor de desenvolvimento
+npm run build    # Cria a build de produção
+npm run preview  # Visualiza a build de produção
+npm run lint     # Executa o linter
 ```
+
+## Estrutura do Projeto
+
+```
+src/
+├── components/      # Componentes reutilizáveis
+├── pages/          # Páginas da aplicação
+├── services/       # Serviços e APIs
+├── lib/            # Utilitários e helpers
+└── assets/         # Imagens e arquivos estáticos
+```
+
+## Contribuindo
+
+Contribuições são bem-vindas! Sinta-se à vontade para abrir issues e pull requests.
+
+## Licença
+
+Este projeto está sob a licença MIT.
+
+---
+
+<div align="center">
+  Desenvolvido com dedicação para facilitar a gestão imobiliária
+</div>
