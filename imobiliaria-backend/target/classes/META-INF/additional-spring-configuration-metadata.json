@@ -1,0 +1,10 @@
+{
+  "properties": [
+    {
+      "name": "app.upload.dir",
+      "type": "java.lang.String",
+      "description": "Diretório base para salvar os arquivos de upload de fotos de imóveis.",
+      "defaultValue": "fotos_imoveis/"
+    }
+  ]
+}

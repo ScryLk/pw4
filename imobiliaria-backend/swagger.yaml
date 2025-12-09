@@ -1,0 +1,1281 @@
+openapi: 3.0.3
+info:
+  title: Imobiliária API
+  description: API REST para sistema de gerenciamento de imóveis
+  version: 1.0.0
+  contact:
+    name: Imobiliária Team
+
+servers:
+  - url: http://localhost:8080
+    description: Development server
+
+tags:
+  - name: Authentication
+    description: Endpoints de autenticação e sessão
+  - name: Users
+    description: Gerenciamento de usuários
+  - name: Bairros
+    description: Gerenciamento de bairros
+  - name: Tipos de Imóveis
+    description: Gerenciamento de tipos de imóveis
+  - name: Imóveis
+    description: Gerenciamento de imóveis
+  - name: Fotos
+    description: Gerenciamento de fotos de imóveis
+
+paths:
+  # ==================== AUTHENTICATION ====================
+  /auth/login:
+    post:
+      tags:
+        - Authentication
+      summary: Login de usuário
+      description: Autentica usuário e cria sessão
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/LoginDTO'
+      responses:
+        '200':
+          description: Login realizado com sucesso
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/UserDTO'
+        '400':
+          description: Email e senha são obrigatórios
+        '401':
+          description: Credenciais inválidas
+
+  /auth/logout:
+    post:
+      tags:
+        - Authentication
+      summary: Logout de usuário
+      description: Invalida a sessão atual
+      responses:
+        '200':
+          description: Logout realizado com sucesso
+          content:
+            text/plain:
+              schema:
+                type: string
+                example: Logout realizado com sucesso.
+        '500':
+          description: Erro ao processar logout
+
+  /auth/status:
+    get:
+      tags:
+        - Authentication
+      summary: Verifica status de autenticação
+      description: Verifica se o usuário está logado
+      responses:
+        '200':
+          description: Usuário está logado
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/UserDTO'
+        '401':
+          description: Usuário não está logado
+
+  # ==================== USERS ====================
+  /users:
+    get:
+      tags:
+        - Users
+      summary: Lista todos os usuários
+      description: Retorna lista de todos os usuários (requer autenticação)
+      security:
+        - sessionAuth: []
+      responses:
+        '200':
+          description: Lista de usuários
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/UserDTO'
+        '401':
+          description: Não autorizado
+
+    post:
+      tags:
+        - Users
+      summary: Cria novo usuário
+      description: Cadastra um novo usuário no sistema
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/UserCreateDTO'
+      responses:
+        '201':
+          description: Usuário criado com sucesso
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/UserModel'
+        '400':
+          description: Erro ao criar usuário
+        '409':
+          description: Email já cadastrado
+
+  /users/{id}:
+    get:
+      tags:
+        - Users
+      summary: Busca usuário por ID
+      description: Retorna dados de um usuário específico
+      security:
+        - sessionAuth: []
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+          description: ID do usuário
+      responses:
+        '200':
+          description: Dados do usuário
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/UserDTO'
+        '401':
+          description: Não autorizado
+        '404':
+          description: Usuário não encontrado
+
+    put:
+      tags:
+        - Users
+      summary: Atualiza usuário
+      description: Atualiza dados de um usuário existente
+      security:
+        - sessionAuth: []
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+          description: ID do usuário
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/UserDTO'
+      responses:
+        '200':
+          description: Usuário atualizado com sucesso
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/UserDTO'
+        '400':
+          description: Erro ao atualizar usuário
+        '401':
+          description: Não autorizado
+        '404':
+          description: Usuário não encontrado
+
+    delete:
+      tags:
+        - Users
+      summary: Remove usuário
+      description: Exclui um usuário do sistema
+      security:
+        - sessionAuth: []
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+          description: ID do usuário
+      responses:
+        '204':
+          description: Usuário removido com sucesso
+        '401':
+          description: Não autorizado
+        '404':
+          description: Usuário não encontrado
+
+  # ==================== BAIRROS ====================
+  /bairros:
+    get:
+      tags:
+        - Bairros
+      summary: Lista todos os bairros
+      description: Retorna lista completa de bairros
+      responses:
+        '200':
+          description: Lista de bairros
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/BairrosModel'
+
+    post:
+      tags:
+        - Bairros
+      summary: Cria novo bairro
+      description: Cadastra um novo bairro
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/BairrosDTO'
+      responses:
+        '201':
+          description: Bairro criado com sucesso
+          headers:
+            Location:
+              schema:
+                type: string
+              description: URI do bairro criado
+
+  /bairros/bairros-page:
+    get:
+      tags:
+        - Bairros
+      summary: Lista bairros paginados
+      description: Retorna lista paginada de bairros
+      parameters:
+        - name: page
+          in: query
+          schema:
+            type: integer
+            default: 0
+          description: Número da página
+        - name: size
+          in: query
+          schema:
+            type: integer
+            default: 10
+          description: Tamanho da página
+        - name: sort
+          in: query
+          schema:
+            type: string
+          description: Campo de ordenação
+      responses:
+        '200':
+          description: Página de bairros
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PageBairros'
+
+  /bairros/{id}:
+    get:
+      tags:
+        - Bairros
+      summary: Busca bairro por ID
+      description: Retorna dados de um bairro específico
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+          description: ID do bairro
+      responses:
+        '200':
+          description: Dados do bairro
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/BairrosModel'
+        '404':
+          description: Bairro não encontrado
+
+    put:
+      tags:
+        - Bairros
+      summary: Atualiza bairro
+      description: Atualiza dados de um bairro existente
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+          description: ID do bairro
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/BairrosDTO'
+      responses:
+        '200':
+          description: Bairro atualizado com sucesso
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/BairrosModel'
+        '404':
+          description: Bairro não encontrado
+
+    delete:
+      tags:
+        - Bairros
+      summary: Remove bairro
+      description: Exclui um bairro do sistema
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+          description: ID do bairro
+      responses:
+        '204':
+          description: Bairro removido com sucesso
+        '404':
+          description: Bairro não encontrado
+
+  # ==================== TIPOS DE IMÓVEIS ====================
+  /tipos-imoveis:
+    get:
+      tags:
+        - Tipos de Imóveis
+      summary: Lista todos os tipos de imóveis
+      description: Retorna lista completa de tipos de imóveis
+      responses:
+        '200':
+          description: Lista de tipos de imóveis
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/TiposImoveisModel'
+
+    post:
+      tags:
+        - Tipos de Imóveis
+      summary: Cria novo tipo de imóvel
+      description: Cadastra um novo tipo de imóvel
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/TiposImoveisDTO'
+      responses:
+        '201':
+          description: Tipo de imóvel criado com sucesso
+          headers:
+            Location:
+              schema:
+                type: string
+              description: URI do tipo criado
+
+  /tipos-imoveis/tipos-page:
+    get:
+      tags:
+        - Tipos de Imóveis
+      summary: Lista tipos de imóveis paginados
+      description: Retorna lista paginada de tipos de imóveis
+      parameters:
+        - name: page
+          in: query
+          schema:
+            type: integer
+            default: 0
+        - name: size
+          in: query
+          schema:
+            type: integer
+            default: 10
+        - name: sort
+          in: query
+          schema:
+            type: string
+      responses:
+        '200':
+          description: Página de tipos de imóveis
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PageTiposImoveis'
+
+  /tipos-imoveis/{id}:
+    get:
+      tags:
+        - Tipos de Imóveis
+      summary: Busca tipo de imóvel por ID
+      description: Retorna dados de um tipo de imóvel específico
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+      responses:
+        '200':
+          description: Dados do tipo de imóvel
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/TiposImoveisModel'
+        '404':
+          description: Tipo não encontrado
+
+    put:
+      tags:
+        - Tipos de Imóveis
+      summary: Atualiza tipo de imóvel
+      description: Atualiza dados de um tipo de imóvel existente
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/TiposImoveisDTO'
+      responses:
+        '200':
+          description: Tipo atualizado com sucesso
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/TiposImoveisModel'
+        '404':
+          description: Tipo não encontrado
+
+    delete:
+      tags:
+        - Tipos de Imóveis
+      summary: Remove tipo de imóvel
+      description: Exclui um tipo de imóvel do sistema
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+      responses:
+        '204':
+          description: Tipo removido com sucesso
+        '404':
+          description: Tipo não encontrado
+
+  # ==================== IMÓVEIS ====================
+  /imoveis:
+    get:
+      tags:
+        - Imóveis
+      summary: Lista todos os imóveis
+      description: Retorna lista completa de imóveis
+      responses:
+        '200':
+          description: Lista de imóveis
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/ImoveisListDTO'
+
+    post:
+      tags:
+        - Imóveis
+      summary: Cria novo imóvel
+      description: Cadastra um novo imóvel (requer autenticação)
+      security:
+        - sessionAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ImoveisDTO'
+      responses:
+        '201':
+          description: Imóvel criado com sucesso
+          headers:
+            Location:
+              schema:
+                type: string
+        '400':
+          description: Dados inválidos
+        '401':
+          description: Não autorizado
+        '403':
+          description: Sem permissão
+
+  /imoveis/imoveis-page:
+    get:
+      tags:
+        - Imóveis
+      summary: Lista imóveis paginados
+      description: Retorna lista paginada de imóveis
+      parameters:
+        - name: page
+          in: query
+          schema:
+            type: integer
+            default: 0
+        - name: size
+          in: query
+          schema:
+            type: integer
+            default: 10
+        - name: sort
+          in: query
+          schema:
+            type: string
+      responses:
+        '200':
+          description: Página de imóveis
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PageImoveis'
+
+  /imoveis/meus:
+    get:
+      tags:
+        - Imóveis
+      summary: Lista imóveis do usuário logado
+      description: Retorna lista de imóveis do usuário autenticado
+      security:
+        - sessionAuth: []
+      responses:
+        '200':
+          description: Lista de imóveis do usuário
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/ImoveisListDTO'
+        '401':
+          description: Não autorizado
+
+  /imoveis/{id}:
+    get:
+      tags:
+        - Imóveis
+      summary: Busca imóvel por ID
+      description: Retorna dados detalhados de um imóvel
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+      responses:
+        '200':
+          description: Dados do imóvel
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ImoveisListDTO'
+        '404':
+          description: Imóvel não encontrado
+
+    put:
+      tags:
+        - Imóveis
+      summary: Atualiza imóvel
+      description: Atualiza dados de um imóvel (apenas proprietário ou admin)
+      security:
+        - sessionAuth: []
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ImoveisDTO'
+      responses:
+        '200':
+          description: Imóvel atualizado com sucesso
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ImoveisModel'
+        '401':
+          description: Não autorizado
+        '403':
+          description: Sem permissão
+        '404':
+          description: Imóvel não encontrado
+        '500':
+          description: Erro interno
+
+    delete:
+      tags:
+        - Imóveis
+      summary: Remove imóvel
+      description: Exclui um imóvel (apenas proprietário ou admin)
+      security:
+        - sessionAuth: []
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+      responses:
+        '204':
+          description: Imóvel removido com sucesso
+        '401':
+          description: Não autorizado
+        '403':
+          description: Sem permissão
+        '404':
+          description: Imóvel não encontrado
+        '500':
+          description: Erro interno
+
+  # ==================== FOTOS ====================
+  /fotos-imoveis:
+    get:
+      tags:
+        - Fotos
+      summary: Lista todas as fotos
+      description: Retorna lista completa de fotos de imóveis
+      responses:
+        '200':
+          description: Lista de fotos
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/FotosImoveisModel'
+
+    post:
+      tags:
+        - Fotos
+      summary: Upload de foto de imóvel
+      description: Faz upload de foto para um imóvel (requer autenticação)
+      security:
+        - sessionAuth: []
+      requestBody:
+        required: true
+        content:
+          multipart/form-data:
+            schema:
+              type: object
+              properties:
+                arquivo:
+                  type: string
+                  format: binary
+                  description: Arquivo de imagem
+                dados:
+                  type: string
+                  description: JSON com dados da foto
+                  example: '{"imovelId": 1, "capa": false, "ordem": 0}'
+              required:
+                - arquivo
+                - dados
+      responses:
+        '201':
+          description: Foto enviada com sucesso
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/FotosImoveisModel'
+        '400':
+          description: Dados inválidos
+        '401':
+          description: Não autorizado
+        '403':
+          description: Sem permissão
+        '404':
+          description: Imóvel não encontrado
+        '500':
+          description: Erro ao salvar arquivo
+
+  /fotos-imoveis/fotos-page:
+    get:
+      tags:
+        - Fotos
+      summary: Lista fotos paginadas
+      description: Retorna lista paginada de fotos
+      parameters:
+        - name: page
+          in: query
+          schema:
+            type: integer
+            default: 0
+        - name: size
+          in: query
+          schema:
+            type: integer
+            default: 10
+        - name: sort
+          in: query
+          schema:
+            type: string
+      responses:
+        '200':
+          description: Página de fotos
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PageFotos'
+
+  /fotos-imoveis/imoveis/{id}:
+    get:
+      tags:
+        - Fotos
+      summary: Lista fotos de um imóvel
+      description: Retorna todas as fotos de um imóvel específico
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+          description: ID do imóvel
+      responses:
+        '200':
+          description: Lista de fotos do imóvel
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/FotosImoveisModel'
+
+  /fotos-imoveis/{id}:
+    get:
+      tags:
+        - Fotos
+      summary: Busca foto por ID
+      description: Retorna dados de uma foto específica
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+      responses:
+        '200':
+          description: Dados da foto
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/FotosImoveisModel'
+        '404':
+          description: Foto não encontrada
+
+    put:
+      tags:
+        - Fotos
+      summary: Atualiza metadados da foto
+      description: Atualiza informações da foto (apenas proprietário ou admin)
+      security:
+        - sessionAuth: []
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/FotosImoveisDTO'
+      responses:
+        '200':
+          description: Foto atualizada com sucesso
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/FotosImoveisModel'
+        '400':
+          description: Dados inválidos
+        '401':
+          description: Não autorizado
+        '403':
+          description: Sem permissão
+        '404':
+          description: Foto não encontrada
+        '500':
+          description: Erro ao atualizar
+
+    delete:
+      tags:
+        - Fotos
+      summary: Remove foto
+      description: Exclui uma foto (apenas proprietário ou admin)
+      security:
+        - sessionAuth: []
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+      responses:
+        '204':
+          description: Foto removida com sucesso
+        '401':
+          description: Não autorizado
+        '403':
+          description: Sem permissão
+        '404':
+          description: Foto não encontrada
+        '500':
+          description: Erro ao excluir
+
+# ==================== COMPONENTS ====================
+components:
+  securitySchemes:
+    sessionAuth:
+      type: apiKey
+      in: cookie
+      name: JSESSIONID
+      description: Autenticação baseada em sessão HTTP
+
+  schemas:
+    # DTOs de Request/Response
+    LoginDTO:
+      type: object
+      required:
+        - email
+        - senha
+      properties:
+        email:
+          type: string
+          format: email
+          example: usuario@example.com
+        senha:
+          type: string
+          format: password
+          example: senha123
+
+    UserDTO:
+      type: object
+      properties:
+        id:
+          type: integer
+          example: 1
+        nome:
+          type: string
+          example: João Silva
+        email:
+          type: string
+          format: email
+          example: joao@example.com
+        tipo:
+          type: string
+          enum: [ADMIN, CORRETOR]
+          example: CORRETOR
+
+    UserCreateDTO:
+      type: object
+      required:
+        - nome
+        - email
+        - senha
+        - tipo
+      properties:
+        nome:
+          type: string
+          example: João Silva
+        email:
+          type: string
+          format: email
+          example: joao@example.com
+        senha:
+          type: string
+          format: password
+          example: senha123
+        tipo:
+          type: string
+          enum: [ADMIN, CORRETOR]
+          example: CORRETOR
+
+    UserModel:
+      type: object
+      properties:
+        id:
+          type: integer
+        nome:
+          type: string
+        email:
+          type: string
+        senha:
+          type: string
+        tipo:
+          type: string
+          enum: [ADMIN, CORRETOR]
+
+    BairrosDTO:
+      type: object
+      required:
+        - nome
+        - cidade
+        - estado
+      properties:
+        nome:
+          type: string
+          example: Centro
+        cidade:
+          type: string
+          example: São Paulo
+        estado:
+          type: string
+          example: SP
+        cep_inicial:
+          type: string
+          example: 01000-000
+        cep_final:
+          type: string
+          example: 01999-999
+
+    BairrosModel:
+      type: object
+      properties:
+        id:
+          type: integer
+        nome:
+          type: string
+        cidade:
+          type: string
+        estado:
+          type: string
+        cep_inicial:
+          type: string
+        cep_final:
+          type: string
+
+    TiposImoveisDTO:
+      type: object
+      required:
+        - nome
+      properties:
+        nome:
+          type: string
+          example: Apartamento
+        descricao:
+          type: string
+          example: Imóvel residencial em edifício
+
+    TiposImoveisModel:
+      type: object
+      properties:
+        id:
+          type: integer
+        nome:
+          type: string
+        descricao:
+          type: string
+
+    ImoveisDTO:
+      type: object
+      required:
+        - titulo
+        - descricao
+        - finalidade
+        - status
+        - tipoImovelId
+        - bairroId
+      properties:
+        titulo:
+          type: string
+          example: Apartamento 3 quartos no Centro
+        descricao:
+          type: string
+          example: Lindo apartamento com vista panorâmica
+        preco_venda:
+          type: number
+          format: decimal
+          example: 450000.00
+        preco_aluguel:
+          type: number
+          format: decimal
+          example: 2500.00
+        finalidade:
+          type: string
+          enum: [VENDA, ALUGUEL, AMBOS]
+          example: VENDA
+        status:
+          type: string
+          enum: [ATIVO, INATIVO, VENDIDO, ALUGADO]
+          example: ATIVO
+        dormitorios:
+          type: integer
+          example: 3
+        banheiros:
+          type: integer
+          example: 2
+        garagem:
+          type: integer
+          example: 2
+        area_total:
+          type: number
+          format: decimal
+          example: 120.50
+        area_construida:
+          type: number
+          format: decimal
+          example: 100.00
+        endereco:
+          type: string
+          example: Rua das Flores
+        numero:
+          type: string
+          example: 123
+        complemento:
+          type: string
+          example: Apto 501
+        cep:
+          type: string
+          example: 01000-000
+        caracteristicas:
+          type: string
+          example: Piscina, Churrasqueira, Elevador
+        destaque:
+          type: boolean
+          example: true
+        tipoImovelId:
+          type: integer
+          example: 1
+        bairroId:
+          type: integer
+          example: 1
+        usuarioId:
+          type: integer
+          example: 1
+          description: ID do usuário (opcional, usa usuário logado se não fornecido)
+
+    ImoveisListDTO:
+      type: object
+      properties:
+        id:
+          type: integer
+        titulo:
+          type: string
+        descricao:
+          type: string
+        preco_venda:
+          type: number
+          format: decimal
+        preco_aluguel:
+          type: number
+          format: decimal
+        finalidade:
+          type: string
+          enum: [VENDA, ALUGUEL, AMBOS]
+        status:
+          type: string
+          enum: [ATIVO, INATIVO, VENDIDO, ALUGADO]
+        dormitorios:
+          type: integer
+        banheiros:
+          type: integer
+        garagem:
+          type: integer
+        area_total:
+          type: number
+          format: decimal
+        area_construida:
+          type: number
+          format: decimal
+        endereco:
+          type: string
+        numero:
+          type: string
+        complemento:
+          type: string
+        cep:
+          type: string
+        caracteristicas:
+          type: string
+        destaque:
+          type: boolean
+        id_tipo_imovel:
+          type: integer
+        nome_tipo_imovel:
+          type: string
+        id_bairro:
+          type: integer
+        nome_bairro:
+          type: string
+        cidade_bairro:
+          type: string
+        estado_bairro:
+          type: string
+        id_usuario:
+          type: integer
+        nome_usuario:
+          type: string
+        email_usuario:
+          type: string
+
+    ImoveisModel:
+      type: object
+      properties:
+        id:
+          type: integer
+        titulo:
+          type: string
+        descricao:
+          type: string
+        preco_venda:
+          type: number
+        preco_aluguel:
+          type: number
+        finalidade:
+          type: string
+        status:
+          type: string
+        dormitorios:
+          type: integer
+        banheiros:
+          type: integer
+        garagem:
+          type: integer
+        area_total:
+          type: number
+        area_construida:
+          type: number
+        endereco:
+          type: string
+        numero:
+          type: string
+        complemento:
+          type: string
+        cep:
+          type: string
+        caracteristicas:
+          type: string
+        destaque:
+          type: boolean
+
+    FotosImoveisDTO:
+      type: object
+      required:
+        - imovelId
+      properties:
+        nome_arquivo:
+          type: string
+          example: foto1.jpg
+        caminho:
+          type: string
+          example: /uploads/1/fotos/foto1.jpg
+        capa:
+          type: boolean
+          example: false
+        ordem:
+          type: integer
+          example: 0
+        imovelId:
+          type: integer
+          example: 1
+
+    FotosImoveisModel:
+      type: object
+      properties:
+        id:
+          type: integer
+        nome_arquivo:
+          type: string
+        caminho:
+          type: string
+        capa:
+          type: boolean
+        ordem:
+          type: integer
+        imovel:
+          type: object
+          description: Objeto imóvel relacionado
+
+    # Schemas de Paginação
+    PageBairros:
+      type: object
+      properties:
+        content:
+          type: array
+          items:
+            $ref: '#/components/schemas/BairrosModel'
+        totalElements:
+          type: integer
+        totalPages:
+          type: integer
+        size:
+          type: integer
+        number:
+          type: integer
+
+    PageTiposImoveis:
+      type: object
+      properties:
+        content:
+          type: array
+          items:
+            $ref: '#/components/schemas/TiposImoveisModel'
+        totalElements:
+          type: integer
+        totalPages:
+          type: integer
+        size:
+          type: integer
+        number:
+          type: integer
+
+    PageImoveis:
+      type: object
+      properties:
+        content:
+          type: array
+          items:
+            $ref: '#/components/schemas/ImoveisListDTO'
+        totalElements:
+          type: integer
+        totalPages:
+          type: integer
+        size:
+          type: integer
+        number:
+          type: integer
+
+    PageFotos:
+      type: object
+      properties:
+        content:
+          type: array
+          items:
+            $ref: '#/components/schemas/FotosImoveisModel'
+        totalElements:
+          type: integer
+        totalPages:
+          type: integer
+        size:
+          type: integer
+        number:
+          type: integer
